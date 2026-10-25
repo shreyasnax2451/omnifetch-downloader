@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: omnifetch-downloader
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    healthCheckPath: /
+    autoDeploy: true

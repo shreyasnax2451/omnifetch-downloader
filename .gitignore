@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+downloads/*
+!downloads/.gitkeep
+.DS_Store
+.env
