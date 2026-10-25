@@ -108,6 +108,17 @@ async def get_video_info(payload: VideoInfoRequest):
         "extract_flat": False,
         "skip_download": True,
         "noplaylist": True,
+        "socket_timeout": 25,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "ios", "mweb", "web"]
+            }
+        },
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-us,en;q=0.5",
+        }
     }
 
     try:
@@ -203,13 +214,29 @@ def _download_task(job_id: str, url: str, format_type: str):
     out_id = str(uuid.uuid4())[:8]
     out_template = str(DOWNLOADS_DIR / f"{out_id}_%(title).100B.%(ext)s")
 
+    ffmpeg_bin = shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg"
+
     ydl_opts: Dict[str, Any] = {
         "outtmpl": out_template,
         "quiet": True,
         "no_warnings": True,
         "progress_hooks": [progress_hook],
         "noplaylist": True,
+        "socket_timeout": 30,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "ios", "mweb", "web"]
+            }
+        },
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-us,en;q=0.5",
+        }
     }
+
+    if os.path.exists(ffmpeg_bin):
+        ydl_opts["ffmpeg_location"] = os.path.dirname(ffmpeg_bin)
 
     if format_type == "mp3":
         ydl_opts.update({
